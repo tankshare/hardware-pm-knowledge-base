@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>硬件产品经理知识体系</title>
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-light: #e8eefb;
+            --accent: #f59e0b;
+            --text: #1f2937;
+            --text-secondary: #6b7280;
+            --bg: #f9fafb;
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+        }
+        .hero {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1a56db 50%, #7c3aed 100%);
+            color: white;
+            padding: 60px 24px 50px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+        .hero p { font-size: 16px; opacity: 0.85; max-width: 600px; margin: 0 auto; }
+        .container {
+            max-width: 800px;
+            margin: 30px auto 60px;
+            padding: 0 24px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            display: flex;
+            align-items: stretch;
+            text-decoration: none;
+            color: inherit;
+        }
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        .card-number {
+            width: 70px;
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+            background: linear-gradient(135deg, #1a56db, #7c3aed);
+            flex-shrink: 0;
+        }
+        .card-number.published {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .card-body {
+            padding: 20px 24px;
+            flex: 1;
+        }
+        .card-body h3 { font-size: 17px; margin-bottom: 6px; }
+        .card-body p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+        .card-meta {
+            margin-top: 10px;
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .badge-published {
+            display: inline-block;
+            background: #dcfce7;
+            color: #16a34a;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-upcoming {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #9ca3af;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .footer {
+            background: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 30px 24px;
+            font-size: 13px;
+        }
+        .footer a { color: #60a5fa; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <h1>🔧 硬件产品经理知识体系</h1>
+    <p>系统化的硬件产品管理知识，从职责定位到落地实践，共10期连载</p>
+</header>
+
+<main class="container">
+
+    <a href="hardware_pm_知识体系_第1期.html" class="card">
+        <div class="card-number published">01</div>
+        <div class="card-body">
+            <span class="badge-published">✅ 已发布</span>
+            <h3>硬件产品经理的职责与核心能力模型</h3>
+            <p>从角色定位到能力图谱，构建硬件产品经理的系统认知框架</p>
+            <div class="card-meta">
+                <span>📅 2026-04-03</span>
+                <span>📝 约3200字</span>
+                <span>⏱️ 12分钟</span>
+            </div>
+        </div>
+    </a>
+
+    <a href="#" class="card" style="pointer-events:auto; opacity:0.7;">
+        <div class="card-number">02</div>
+        <div class="card-body">
+            <span class="badge-upcoming">⏳ 即将发布</span>
+            <h3>硬件产品开发全流程概述</h3>
+            <p>NPI全流程详解，从概念到量产的每个关键决策点</p>
+            <div class="card-meta">
+                <span>📅 2026-04-04</span>
+                <span>📝 约3000字</span>
+                <span>⏱️ 10分钟</span>
+            </div>
+        </div>
+    </a>
+
+    <a href="#" class="card" style="pointer-events:auto; opacity:0.7;">
+        <div class="card-number">03</div>
+        <div class="card-body">
+            <span class="badge-upcoming">⏳ 即将发布</span>
+            <h3>市场需求分析与产品定位</h3>
+            <p>市场洞察方法论与竞品分析实战框架</p>
+            <div class="card-meta"><span>📅 2026-04-05</span></div>
+        </div>
+    </a>
+
+    <a href="#" class="card" style="pointer-events:auto; opacity:0.7;">
+        <div class="card-number">04</div>
+        <div class="card-body">
+            <span class="badge-upcoming">⏳ 即将发布</span>
+            <h3>硬件产品需求文档（PRD）编写规范</h3>
+            <p>硬件PRD的结构、内容与可落地的文档模板</p>
+            <div class="card-meta"><span>📅 2026-04-06</span></div>
+        </div>
+    </a>
+
+    <a href="#" class="card" style="pointer-events:auto; opacity:0.7;">
+        <div class="card-number">05</div>
+        <div class="card-body">
+            <span class="badge-upcoming">⏳ 即将发布</span>
+            <h3>硬件架构设计与选型</h3>
+            <p>系统架构设计方法论与关键器件选型策略</p>
+            <div class="card-meta"><span>📅 2026-04-07</span></div>
+        </div>
+    </a>
+
+    <a href="#" class="card" style="pointer-events:auto; opacity:0.7;">
+        <div class="card-number">06</div>
+        <div class="card-body">
+            <span class="badge-upcoming">⏳ 即将发布</span>
+            <h3>电子元器件选型与供应链管理</h3>
+            <p>元器件选型原则、供应链风险评估与成本优化</p>
+            <div class="card-meta"><span>📅 2026-04-08</span></div>
+        </div>
+    </a>
+
+    <a href="#" class="card" style="pointer-events:auto; opacity:0.7;">
+        <div class="card-number">07</div>
+        <div class="card-body">
+            <span class="badge-upcoming">⏳ 即将发布</span>
+            <h3>PCB设计与布局规范</h3>
+            <p>PCB设计流程、Layout规范与常见问题</p>
+            <div class="card-meta"><span>📅 2026-04-09</span></div>
+        </div>
+    </a>
+
+    <a href="#" class="card" style="pointer-events:auto; opacity:0.7;">
+        <div class="card-number">08</div>
+        <div class="card-body">
+            <span class="badge-upcoming">⏳ 即将发布</span>
+            <h3>硬件测试与验证方法论</h3>
+            <p>EVT/DVT/PVT各阶段测试策略与验证体系</p>
+            <div class="card-meta"><span>📅 2026-04-10</span></div>
+        </div>
+    </a>
+
+    <a href="#" class="card" style="pointer-events:auto; opacity:0.7;">
+        <div class="card-number">09</div>
+        <div class="card-body">
+            <span class="badge-upcoming">⏳ 即将发布</span>
+            <h3>固件开发与硬件驱动</h3>
+            <p>嵌入式固件开发流程与硬件驱动接口设计</p>
+            <div class="card-meta"><span>📅 2026-04-11</span></div>
+        </div>
+    </a>
+
+    <a href="#" class="card" style="pointer-events:auto; opacity:0.7;">
+        <div class="card-number">10</div>
+        <div class="card-body">
+            <span class="badge-upcoming">⏳ 即将发布</span>
+            <h3>硬件产品的用户体验设计</h3>
+            <p>硬件UX设计原则、工业设计与交互设计整合</p>
+            <div class="card-meta"><span>📅 2026-04-12</span></div>
+        </div>
+    </a>
+
+</main>
+
+<footer class="footer">
+    <p>🔧 硬件产品经理知识体系 · 由 WorkBuddy AI 自动生成</p>
+    <p style="margin-top:6px;">© 2026 tankshare | 每日12:00自动更新</p>
+</footer>
+
+</body>
+</html>
