@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>硬件产品经理知识体系 · 第2期 — 硬件产品开发全流程概述</title>
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-light: #e8eefb;
+            --accent: #f59e0b;
+            --text: #1f2937;
+            --text-secondary: #6b7280;
+            --bg: #f9fafb;
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1a56db 100%);
+            color: white;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+        .nav-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-brand {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .nav-brand span { opacity: 0.7; font-weight: 400; margin-left: 8px; font-size: 13px; }
+        .nav-period {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* Hero 区域 */
+        .hero {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1a56db 50%, #7c3aed 100%);
+            color: white;
+            padding: 60px 24px 50px;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .hero-subtitle {
+            font-size: 16px;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        .hero-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .hero-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 目录导航 */
+        .toc-container {
+            max-width: 900px;
+            margin: -25px auto 0;
+            padding: 0 24px;
+            position: relative;
+            z-index: 10;
+        }
+        .toc-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            padding: 24px 30px;
+        }
+        .toc-card h3 {
+            font-size: 15px;
+            color: var(--primary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toc-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 24px;
+        }
+        @media (max-width: 600px) { .toc-list { grid-template-columns: 1fr; } }
+        .toc-list li a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+        .toc-list li a:hover { color: var(--primary); }
+        .toc-list .toc-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* 主内容 */
+        .main-content {
+            max-width: 900px;
+            margin: 30px auto 60px;
+            padding: 0 24px;
+        }
+
+        /* 章节 */
+        .section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+        .section:hover { box-shadow: var(--shadow-md); }
+
+        .section-header {
+            padding: 20px 28px;
+            border-left: 4px solid var(--primary);
+            background: linear-gradient(90deg, var(--primary-light) 0%, transparent 100%);
+        }
+        .section-header h2 {
+            font-size: 20px;
+            color: var(--text);
+            font-weight: 700;
+        }
+        .section-header .section-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .section-body { padding: 20px 28px 28px; }
+
+        /* 子标题 */
+        h3 {
+            font-size: 17px;
+            color: var(--text);
+            margin: 24px 0 12px;
+            padding-left: 14px;
+            border-left: 3px solid var(--accent);
+        }
+        h4 {
+            font-size: 15px;
+            color: var(--text);
+            margin: 18px 0 10px;
+            font-weight: 600;
+        }
+
+        /* 段落 */
+        p { margin-bottom: 14px; font-size: 15px; color: #374151; }
+        ul, ol { padding-left: 20px; margin-bottom: 14px; }
+        li { margin-bottom: 6px; font-size: 15px; color: #374151; }
+
+        /* 提示框 */
+        .callout {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 18px 0;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        .callout-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .callout-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+        .callout-warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+        .callout-success {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+        .callout-danger {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+        .callout-tip {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        /* 表格 */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 18px 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        thead { background: #f3f4f6; }
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            color: #374151;
+        }
+        tbody tr:hover { background: #f9fafb; }
+        tbody tr:last-child td { border-bottom: none; }
+
+        /* 代码块 */
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px 24px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 18px 0;
+            font-size: 13px;
+            line-height: 1.6;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+        code {
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #e11d48;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        /* 流程阶段卡片 */
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+            margin: 18px 0;
+        }
+        .phase-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: default;
+        }
+        .phase-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .phase-card .phase-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .phase-card .phase-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .phase-card .phase-aka {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .phase-card .phase-duration {
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* 里程碑时间线 */
+        .timeline {
+            position: relative;
+            margin: 18px 0;
+        }
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .timeline-marker {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+            z-index: 1;
+            position: relative;
+        }
+        .timeline-item:not(:last-child) .timeline-marker::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 36px;
+            transform: translateX(-50%);
+            width: 2px;
+            height: calc(100% + 8px);
+            background: var(--border);
+        }
+        .timeline-content {
+            flex: 1;
+            padding-top: 4px;
+        }
+        .timeline-content h4 { margin: 0 0 4px; font-size: 15px; }
+        .timeline-content p { font-size: 14px; margin-bottom: 6px; }
+
+        /* 决策检查表 */
+        .checklist {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin: 18px 0;
+        }
+        .checklist-title {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .checklist-item input[type="checkbox"] {
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        /* 分隔线 */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 24px 0;
+        }
+
+        /* 标签 */
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin: 2px 4px 2px 0;
+        }
+        .tag-blue { background: #dbeafe; color: #1d4ed8; }
+        .tag-green { background: #dcfce7; color: #16a34a; }
+        .tag-orange { background: #fef3c7; color: #d97706; }
+        .tag-purple { background: #ede9fe; color: #7c3aed; }
+        .tag-red { background: #fee2e2; color: #dc2626; }
+
+        /* 风险警示 */
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .risk-item {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            border-left: 4px solid;
+        }
+        .risk-item.high { border-left-color: #ef4444; }
+        .risk-item.medium { border-left-color: #f59e0b; }
+        .risk-item.low { border-left-color: #10b981; }
+        .risk-item h5 { font-size: 14px; margin-bottom: 4px; }
+        .risk-item p { font-size: 13px; margin: 0; }
+
+        /* 页脚 */
+        .footer {
+            background: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 30px 24px;
+            font-size: 13px;
+        }
+        .footer a { color: #60a5fa; text-decoration: none; }
+
+        /* 返回顶部 */
+        .back-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 99;
+        }
+        .back-top:hover { transform: scale(1.1); }
+        .back-top.visible { display: flex; }
+
+        /* 进度条 */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), #ef4444);
+            z-index: 200;
+            transition: width 0.1s;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 阅读进度条 -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- 顶部导航 -->
+<nav class="top-nav">
+    <div class="nav-inner">
+        <div class="nav-brand">🔧 硬件产品经理知识体系 <span>Hardware PM Knowledge Base</span></div>
+        <div class="nav-period">第 2 期 / 共 10 期</div>
+    </div>
+</nav>
+
+<!-- Hero 区域 -->
+<header class="hero">
+    <div class="hero-badge">📘 知识体系 · 第 2 期</div>
+    <h1>硬件产品开发全流程概述</h1>
+    <p class="hero-subtitle">从概念到量产，系统理解硬件产品开发的完整生命周期及各阶段核心任务</p>
+    <div class="hero-meta">
+        <div class="hero-meta-item">📅 2026年4月4日</div>
+        <div class="hero-meta-item">⏱️ 预计阅读 14 分钟</div>
+        <div class="hero-meta-item">📝 约 3100 字</div>
+        <div class="hero-meta-item">📌 难度：入门级</div>
+    </div>
+</header>
+
+<!-- 目录 -->
+<div class="toc-container">
+    <div class="toc-card">
+        <h3>📑 本期目录</h3>
+        <ul class="toc-list">
+            <li><a href="#s1"><span class="toc-num">1</span> NPI流程总览：从概念到量产</a></li>
+            <li><a href="#s2"><span class="toc-num">2</span> 概念阶段（Concept）</a></li>
+            <li><a href="#s3"><span class="toc-num">3</span> 设计阶段（EVT）</a></li>
+            <li><a href="#s4"><span class="toc-num">4</span> 设计验证阶段（DVT）</a></li>
+            <li><a href="#s5"><span class="toc-num">5</span> 小批量验证阶段（PVT）</a></li>
+            <li><a href="#s6"><span class="toc-num">6</span> 量产导入阶段（MP）</a></li>
+            <li><a href="#s7"><span class="toc-num">7</span> PM在每个阶段的核心任务</a></li>
+            <li><a href="#s8"><span class="toc-num">8</span> 阶段决策门与Checklist模板</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- 主内容 -->
+<main class="main-content">
+
+    <!-- ======== 第一节 ======== -->
+    <section class="section" id="s1">
+        <div class="section-header">
+            <h2>一、NPI流程总览：从概念到量产</h2>
+            <div class="section-desc">理解硬件产品开发的完整生命周期与关键里程碑</div>
+        </div>
+        <div class="section-body">
+            <p><strong>NPI（New Product Introduction，新产品导入）</strong>是硬件产品从想法到交付客户手中的完整流程。与软件项目不同，硬件NPI具有高度的结构化特征，每个阶段都有明确的<strong>输入条件、输出物（Gate Deliverables）和决策门（Decision Gate）</strong>。</p>
+
+            <h3>1.1 典型NPI五阶段模型</h3>
+            <p>业界最通用的硬件产品开发阶段划分为四个验证阶段加一个量产阶段，以下是各阶段概览：</p>
+
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <div class="phase-icon">💡</div>
+                    <div class="phase-name">Concept</div>
+                    <div class="phase-aka">概念阶段</div>
+                    <div class="phase-duration">1-3 个月</div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-icon">🔬</div>
+                    <div class="phase-name">EVT</div>
+                    <div class="phase-aka">工程验证测试</div>
+                    <div class="phase-duration">2-4 个月</div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-icon">🛠️</div>
+                    <div class="phase-name">DVT</div>
+                    <div class="phase-aka">设计验证测试</div>
+                    <div class="phase-duration">3-6 个月</div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-icon">🏭</div>
+                    <div class="phase-name">PVT</div>
+                    <div class="phase-aka">小批量验证</div>
+                    <div class="phase-duration">1-3 个月</div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-icon">🚀</div>
+                    <div class="phase-name">MP</div>
+                    <div class="phase-aka">量产阶段</div>
+                    <div class="phase-duration">持续</div>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <div class="callout-title">💡 关键概念：阶段门（Phase Gate）</div>
+                每个阶段结束时都会有一个<strong>决策门（Decision Gate / Stage Gate）</strong>，团队需要评审该阶段的输出物，由管理层或项目委员会决定是否进入下一阶段。Gate评审未通过，项目可能被暂停、重新设计或终止。这是一个保护机制——避免将不成熟的设计推进到成本更高的后续阶段。
+            </div>
+
+            <h3>1.2 典型开发周期参考</h3>
+            <p>不同复杂度的产品，开发周期差异巨大：</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>产品类型</th>
+                            <th>典型周期</th>
+                            <th>复杂度说明</th>
+                            <th>PM关注重点</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>简单配件（如充电线）</td>
+                            <td>3-6 个月</td>
+                            <td>结构件为主，无电子开发</td>
+                            <td>认证合规、模具开发</td>
+                        </tr>
+                        <tr>
+                            <td>消费电子（如TWS耳机）</td>
+                            <td>9-15 个月</td>
+                            <td>PCBA+结构+ID，常规认证</td>
+                            <td>成本、供应链、量产爬坡</td>
+                        </tr>
+                        <tr>
+                            <td>IoT设备（如智能摄像头）</td>
+                            <td>12-18 个月</td>
+                            <td>含通信模组，涉及多认证</td>
+                            <td>认证、无线合规、BOM优化</td>
+                        </tr>
+                        <tr>
+                            <td>工业/医疗设备</td>
+                            <td>18-36 个月</td>
+                            <td>高可靠性要求，长认证周期</td>
+                            <td>法规合规、可靠性验证</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== 第二节 ======== -->
+    <section class="section" id="s2">
+        <div class="section-header">
+            <h2>二、概念阶段（Concept）</h2>
+            <div class="section-desc">从想法到立项，定义"做什么产品"的关键决策期</div>
+        </div>
+        <div class="section-body">
+            <p>概念阶段是硬件产品开发中<strong>战略价值最高</strong>的阶段。这个阶段花的时间（通常1-3个月）虽然不长，但做出的决策将影响后续整个开发周期的方向。方向错了，后面越努力越浪费。</p>
+
+            <h3>2.1 概念阶段核心任务</h3>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-content">
+                        <h4>市场机会评估</h4>
+                        <p>分析目标市场规模、增长趋势、竞争格局，判断是否值得进入。使用TAM/SAM/SOM三层模型评估市场天花板。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-content">
+                        <h4>用户需求研究</h4>
+                        <p>通过访谈、问卷、场景观察等方式，理解用户痛点和真实需求。避免"专家式假设"——研发团队觉得用户需要的，和用户实际需要的，往往是两回事。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">3</div>
+                    <div class="timeline-content">
+                        <h4>概念方案探索</h4>
+                        <p>形成2-3个可选的产品概念方向，评估各方向的技术可行性、成本可行性和商业可行性。可通过简易原型（Mockup）、概念视频等方式进行快速验证。</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-marker">4</div>
+                    <div class="timeline-content">
+                        <h4>项目立项（Project Charter）</h4>
+                        <p>确定产品方向、目标市场、初步预算、项目时间线和团队配置。获得管理层批准，正式启动项目。</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>2.2 概念阶段PM核心产出</h3>
+            <ul>
+                <li><strong>产品概念文档（Concept Document）</strong>：描述产品愿景、目标用户、核心价值主张</li>
+                <li><strong>初步产品规格（Pre-Spec）</strong>：关键性能指标的初步目标</li>
+                <li><strong>市场分析报告</strong>：市场规模、竞争格局、进入策略</li>
+                <li><strong>项目章程（Project Charter）</strong>：目标、预算、时间线、团队授权</li>
+                <li><strong>初步BOM成本估算</strong>：基于概念方案的初步成本评估，误差通常在±30%</li>
+            </ul>
+
+            <h3>2.3 概念阶段的常见陷阱</h3>
+            <div class="callout callout-warning">
+                <div class="callout-title">⚠️ PM必须警惕的三个问题</div>
+                <ul style="margin-bottom:0;">
+                    <li><strong>"完美产品"陷阱</strong>：试图在一个产品中塞入所有功能。硬件产品受成本、尺寸、功耗约束，必须做取舍。概念阶段的核心任务就是确定<strong>做什么、不做什么</strong>。</li>
+                    <li><strong>跳过用户验证</strong>：工程师和管理层的"直觉"代替了真实用户研究。解决方案：用"五个为什么"深挖用户表面需求背后的真实动机。</li>
+                    <li><strong>低估成本</strong>：概念阶段的成本估算是最粗略的，但也是最容易被管理层当作承诺的。务必标注"初步估算，误差±30%"，避免后续被动。</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== 第三节 ======== -->
+    <section class="section" id="s3">
+        <div class="section-header">
+            <h2>三、设计阶段 — EVT（工程验证测试）</h2>
+            <div class="section-desc">验证技术可行性，"把东西做出来"的第一步</div>
+        </div>
+        <div class="section-body">
+            <p><strong>EVT（Engineering Verification Test）</strong>阶段的目标是<strong>验证产品设计在技术层面的可行性</strong>。这一阶段通常会制作首批原型（Proto Type），数量较少（5-50台），用于验证核心功能是否可实现。</p>
+
+            <h3>3.1 EVT阶段核心任务</h3>
+            <ul>
+                <li><strong>ID/MD设计冻结</strong>：完成外观设计（ID）和结构设计（MD），输出3D文件和工程图</li>
+                <li><strong>原理图设计</strong>：电路原理图设计完成，进入PCB布局</li>
+                <li><strong>首批原型制作</strong>：使用快速打样（手焊样板、CNC小批量）制作原型</li>
+                <li><strong>基本功能验证</strong>：测试核心功能是否可实现，性能指标是否达标</li>
+                <li><strong>工艺可行性评估</strong>：评估设计方案是否适合量产，识别可制造性风险</li>
+            </ul>
+
+            <h3>3.2 EVT阶段典型问题</h3>
+
+            <div class="risk-grid">
+                <div class="risk-item high">
+                    <h5>🔴 高风险：核心IC缺货</h5>
+                    <p>选型时未考虑供应链风险，EVT完成后发现关键芯片交期12周+，被迫改方案</p>
+                </div>
+                <div class="risk-item high">
+                    <h5>🔴 高风险：结构干涉</h5>
+                    <p>ID设计与内部堆叠冲突，导致结构推翻重来，延误3-4周</p>
+                </div>
+                <div class="risk-item medium">
+                    <h5>🟡 中风险：功耗超标</h5>
+                    <p>实测功耗超出目标，需优化方案或调整电池容量</p>
+                </div>
+                <div class="risk-item medium">
+                    <h5>🟡 中风险：认证预评估失败</h5>
+                    <p>天线设计或材料选择不满足认证要求，需重新设计</p>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <div class="callout-title">💡 EVT通过的标准</div>
+                EVT Gate评审的核心判断标准是：<strong>设计方案在技术上是否基本可行</strong>。注意这里是"基本可行"而非"完美"——EVT允许有Bug，但核心架构不能有颠覆性问题。举例：外壳缝隙大可以通过，但核心功能不工作则EVT不通过。
+            </div>
+
+            <h3>3.3 EVT阶段PM产出物</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>产出物</th>
+                            <th>负责方</th>
+                            <th>PM审核重点</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>产品规格书（Spec V1.0）</td>
+                            <td>PM主导</td>
+                            <td>参数是否与概念阶段承诺一致？成本是否在预算内？</td>
+                        </tr>
+                        <tr>
+                            <td>ID/MD设计文件</td>
+                            <td>设计团队</td>
+                            <td>外观是否满足目标用户审美？CMF（颜色/材质/工艺）是否可量产？</td>
+                        </tr>
+                        <tr>
+                            <td>原理图+PCB布局</td>
+                            <td>硬件工程师</td>
+                            <td>关键器件选型是否与Spec一致？替代料是否有备选？</td>
+                        </tr>
+                        <tr>
+                            <td>BOM表（EVT版本）</td>
+                            <td>PM+采购</td>
+                            <td>成本是否超目标？关键器件交期是否可接受？</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== 第四节 ======== -->
+    <section class="section" id="s4">
+        <div class="section-header">
+            <h2>四、设计验证阶段 — DVT（Design Verification Test）</h2>
+            <div class="section-desc">全面验证设计，锁定产品规格，准备量产</div>
+        </div>
+        <div class="section-body">
+            <p><strong>DVT（Design Verification Test）</strong>是硬件开发中<strong>最关键的验证阶段</strong>。这个阶段会使用正式开模后的零件装配产品（通常30-100台），进行全面的功能和可靠性验证。DVT结束后，产品设计基本锁定，后续变更成本极高。</p>
+
+            <h3>4.1 DVT阶段核心测试类型</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>测试类别</th>
+                            <th>测试内容</th>
+                            <th>典型周期</th>
+                            <th>失败处理</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>功能测试</strong></td>
+                            <td>所有Spec项逐一测试，确认功能完整性</td>
+                            <td>1-2周</td>
+                            <td>硬件修改/固件修复</td>
+                        </tr>
+                        <tr>
+                            <td><strong>性能测试</strong></td>
+                            <td>功耗、温度、信号强度、音频指标等</td>
+                            <td>2-3周</td>
+                            <td>方案调整或规格重定义</td>
+                        </tr>
+                        <tr>
+                            <td><strong>可靠性测试</strong></td>
+                            <td>高低温、振动、跌落、按键寿命等</td>
+                            <td>2-4周</td>
+                            <td>结构加固或材料更换</td>
+                        </tr>
+                        <tr>
+                            <td><strong>认证预测试</strong></td>
+                            <td>FCC/CE/CCC预测试，发现问题提前整改</td>
+                            <td>2-4周</td>
+                            <td>需重新设计和重新送测</td>
+                        </tr>
+                        <tr>
+                            <td><strong>用户体验测试</strong></td>
+                            <td>真实用户试用，收集使用反馈</td>
+                            <td>1-2周</td>
+                            <td>软件优化/ID微调</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>4.2 DVT阶段的变更管理</h3>
+            <p>DVT阶段是硬件变更的<strong>最后窗口期</strong>。一旦进入DVT后期，任何需求变更都需要走ECN（Engineering Change Notification）流程，且需重新验证。PM在这一阶段的核心职责之一就是<strong>严格管控变更</strong>：</p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-marker">1</div>
+                    <div class="step-content">
+                        <h4>评估变更必要性</h4>
+                        <p>询问两个问题：这个变更解决的是真实用户痛点，还是研发团队的技术洁癖？如果是后者，说"不"。</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-marker">2</div>
+                    <div class="step-content">
+                        <h4>量化变更影响</h4>
+                        <p>使用变更影响评估表，量化变更对成本、进度、认证的影响。例如：改一颗IC影响4个认证项目，增加¥8万成本，延误3周。</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-marker">3</div>
+                    <div class="step-content">
+                        <h4>获取变更授权</h4>
+                        <p>重大变更（影响成本>¥5或进度>2周）必须上报产品委员会决策，不能PM单方面决定。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout callout-danger">
+                <div class="callout-title">🚨 DVT阶段变更的代价</div>
+                一个看似简单的变更（如换一颗按键），可能引发连锁反应：需要重新开模（¥5万+），需要重新做认证（¥10万+，延迟2-3个月），需要重新验证可靠性。建议PM在DVT阶段对需求变更说"<strong>这个需求，放到下一代</strong>"。
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== 第五节 ======== -->
+    <section class="section" id="s5">
+        <div class="section-header">
+            <h2>五、小批量验证阶段 — PVT（Production Validation Test）</h2>
+            <div class="section-desc">在量产环境下验证产品和工艺，为大规模生产做最后准备</div>
+        </div>
+        <div class="section-body">
+            <p><strong>PVT（Production Validation Test）</strong>阶段的核心目标是验证<strong>产品是否能在量产环境下稳定生产</strong>。这一阶段使用正式产线和正式模具生产，通常200-500台，重点关注：良率、产能爬坡、一致性和包装物流。</p>
+
+            <h3>5.1 PVT阶段核心验证指标</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>指标</th>
+                            <th>定义</th>
+                            <th>通过标准</th>
+                            <th>PM行动</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>产线良率</strong></td>
+                            <td>首次通过测试的产品比例</td>
+                            <td>≥95%</td>
+                            <td>推动工艺优化，识别失效模式</td>
+                        </tr>
+                        <tr>
+                            <td><strong>性能一致性</strong></td>
+                            <td>批量产品的关键参数离散度</td>
+                            <td>Cpk≥1.33</td>
+                            <td>要求工程团队分析根因</td>
+                        </tr>
+                        <tr>
+                            <td><strong>包装物流验证</strong></td>
+                            <td>运输测试（跌落、振动）后产品完好</td>
+                            <td>0%破损</td>
+                            <td>确认包装方案</td>
+                        </tr>
+                        <tr>
+                            <td><strong>产能爬坡曲线</strong></td>
+                            <td>周产能增长目标</td>
+                            <td>按计划达成</td>
+                            <td>协调资源，处理瓶颈</td>
+                        </tr>
+                        <tr>
+                            <td><strong>料件验证</strong></td>
+                            <td>所有BOM料件均完成PPAP</td>
+                            <td>100%完成</td>
+                            <td>推动采购完成最后料件PPAP</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>5.2 PVT与DVT的本质区别</h3>
+            <div class="callout callout-success">
+                <div class="callout-title">✅ 核心区别一句话总结</div>
+                <strong>DVT验证"设计是否正确"，PVT验证"量产是否可行"</strong>。DVT阶段的原型可能是手工装配的，PVT阶段必须用量产产线和量产工艺。一个产品在DVT阶段功能完美，但在PVT阶段良率只有60%——这种情况并不罕见。
+            </div>
+
+            <h3>5.3 PVT阶段PM工作重点</h3>
+            <ul>
+                <li><strong>良率追踪</strong>：每日追踪产线良率，按失效模式分类，识别TOP3问题并推动解决</li>
+                <li><strong>成本控制</strong>：PVT批次BOM成本与目标成本对比，分析超支原因并制定降本计划</li>
+                <li><strong>认证推进</strong>：正式提交认证样品，跟进认证进度，处理认证不合格项</li>
+                <li><strong>风险封闭</strong>：对照风险清单，逐项确认关闭状态</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ======== 第六节 ======== -->
+    <section class="section" id="s6">
+        <div class="section-header">
+            <h2>六、量产导入阶段 — MP（Mass Production）</h2>
+            <div class="section-desc">产品正式上市，PM的战场从"做产品"转向"卖产品"</div>
+        </div>
+        <div class="section-body">
+            <p><strong>MP（Mass Production）</strong>阶段意味着产品正式进入大规模生产。但PM的工作并没有结束——相反，这是一个全新的战场：<strong>从"做产品"转向"卖产品"</strong>。MP阶段的PM更像一个运营者，持续追踪产品健康度和商业表现。</p>
+
+            <h3>6.1 MP阶段PM核心职责</h3>
+
+            <div class="phase-grid">
+                <div class="phase-card">
+                    <div class="phase-icon">📊</div>
+                    <div class="phase-name">运营监控</div>
+                    <div class="phase-aka">Production Monitoring</div>
+                    <div class="phase-duration">持续</div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-icon">🏭</div>
+                    <div class="phase-name">供应链保障</div>
+                    <div class="phase-aka">Supply Chain</div>
+                    <div class="phase-duration">持续</div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-icon">💰</div>
+                    <div class="phase-name">成本优化</div>
+                    <div class="phase-aka">Cost Optimization</div>
+                    <div class="phase-duration">持续</div>
+                </div>
+                <div class="phase-card">
+                    <div class="phase-icon">🔄</div>
+                    <div class="phase-name">生命周期</div>
+                    <div class="phase-aka">Lifecycle Mgmt</div>
+                    <div class="phase-duration">EOL规划</div>
+                </div>
+            </div>
+
+            <h3>6.2 量产爬坡（Production Ramp）管理</h3>
+            <p>MP初期最重要的任务是<strong>管理产能爬坡</strong>——从PVT的小批量逐步提升到目标产能。这个过程通常需要4-8周，期间PM需要持续关注：</p>
+
+<pre><code>产能爬坡标准曲线（示例）：
+Week 1-2:  500台/周  （PVT批次延续，良率调优）
+Week 3-4:  2000台/周 （产线提速，工艺固化）
+Week 5-6:  5000台/周 （接近目标产能）
+Week 7+:   目标产能  （如10000台/周）
+
+爬坡预警信号：
+🔴 良率连续3天低于90% → 立即暂停爬坡，召开质量会议
+🟡 单一不良模式占比>30% → 推动工程团队优先解决TOP1问题
+🟡 料件到货延迟>3天 → 启动备选供应商或调整出货计划</code></pre>
+
+            <h3>6.3 MP阶段关键监控指标（KPI Dashboard）</h3>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>维度</th>
+                            <th>指标</th>
+                            <th>监控频率</th>
+                            <th>警戒线</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="tag tag-red">质量</span></td>
+                            <td>RMA率</td>
+                            <td>每周</td>
+                            <td>&gt;2%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="tag tag-red">质量</span></td>
+                            <td>批次不良率</td>
+                            <td>每日</td>
+                            <td>&gt;1%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="tag tag-orange">供应</span></td>
+                            <td>库存周转天数</td>
+                            <td>每月</td>
+                            <td>&gt;目标30天</td>
+                        </tr>
+                        <tr>
+                            <td><span class="tag tag-blue">成本</span></td>
+                            <td>实际BOM vs 目标BOM</td>
+                            <td>每月</td>
+                            <td>超支>5%</td>
+                        </tr>
+                        <tr>
+                            <td><span class="tag tag-purple">交付</span></td>
+                            <td>订单准时交付率</td>
+                            <td>每周</td>
+                            <td>&lt;95%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-tip">
+                <div class="callout-title">✅ MP阶段的"降本周规"</div>
+                量产阶段的降本主要来自三个方面：<strong>（1）设计优化</strong>（减少PCB层数、合并芯片功能），<strong>（2）供应链谈判</strong>（量产后争取更好的价格），<strong>（3）工艺优化</strong>（减少工序、提升良率）。PM需要定期组织降本评审会议，推动工程和采购持续挖掘降本空间。
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== 第七节 ======== -->
+    <section class="section" id="s7">
+        <div class="section-header">
+            <h2>七、PM在每个阶段的核心任务全景图</h2>
+            <div class="section-desc">一张表说清楚硬件PM在各阶段的角色定位</div>
+        </div>
+        <div class="section-body">
+            <p>下面用一张全景图总结硬件PM在NPI各阶段的核心任务和产出，帮助你建立全局视角：</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>阶段</th>
+                            <th>PM核心角色</th>
+                            <th>PM核心任务</th>
+                            <th>关键输出物</th>
+                            <th>最大风险</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Concept</strong></td>
+                            <td><span class="tag tag-purple">战略家</span></td>
+                            <td>定义方向，立项决策</td>
+                            <td>概念文档、项目章程</td>
+                            <td>方向选错，全盘皆输</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EVT</strong></td>
+                            <td><span class="tag tag-blue">协调者</span></td>
+                            <td>跨部门协调，需求澄清</td>
+                            <td>产品规格书、BOM V1</td>
+                            <td>技术方案推翻重来</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DVT</strong></td>
+                            <td><span class="tag tag-orange">守门员</span></td>
+                            <td>变更管控，质量把关</td>
+                            <td>测试报告、ECN记录</td>
+                            <td>需求变更打断开发</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PVT</strong></td>
+                            <td><span class="tag tag-green">推动者</span></td>
+                            <td>良率爬坡、认证推进</td>
+                            <td>PVT报告、良率数据</td>
+                            <td>良率不足，无法量产</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MP</strong></td>
+                            <td><span class="tag tag-red">运营者</span></td>
+                            <td>监控KPI、降本优化</td>
+                            <td>运营周报、生命周期规划</td>
+                            <td>RMA爆发、库存积压</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="callout callout-info">
+                <div class="callout-title">💡 PM角色的演变规律</div>
+                从Concept到MP，硬件PM的角色经历了一个有趣的演变：<strong>越前期越像"战略家"，越后期越像"运营者"</strong>。前两个阶段PM的核心价值在于<strong>正确的决策</strong>（避免做错产品），后三个阶段PM的核心价值在于<strong>高效的执行</strong>（把产品做好、卖好）。
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== 第八节 ======== -->
+    <section class="section" id="s8">
+        <div class="section-header">
+            <h2>八、阶段决策门Checklist模板</h2>
+            <div class="section-desc">可复用的Gate评审清单模板，直接用于实际项目</div>
+        </div>
+        <div class="section-body">
+            <p>以下是可用于每个阶段Gate评审的<strong>通用Checklist模板</strong>。建议在每个Gate前1周，由PM组织各职能团队完成自检，确保Gate评审顺利通过：</p>
+
+            <h3>8.1 EVT Gate 评审Checklist</h3>
+            <div class="checklist">
+                <div class="checklist-title">📋 EVT Gate — PM自检清单</div>
+                <div class="checklist-item"><input type="checkbox"> <span>产品规格书已与研发团队对齐，所有参数有明确测试方法</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>BOM表已更新，关键器件已锁定供应商和交期</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>ID/MD设计已完成并冻结（可接受公差范围内的迭代）</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>核心功能（占比>80%的Spec项）已通过基本功能验证</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>关键性能指标（功耗、温度、信号）已有初步测试数据</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>认证计划已制定，关键认证项目已启动预评估</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>成本目标与初步BOM成本对比，差异已分析并制定应对措施</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>下阶段（DVT）预算已获财务批准</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>风险清单已更新，所有高风险项有应对计划</span></div>
+            </div>
+
+            <h3>8.2 DVT Gate 评审Checklist</h3>
+            <div class="checklist">
+                <div class="checklist-title">📋 DVT Gate — PM自检清单</div>
+                <div class="checklist-item"><input type="checkbox"> <span>100%的Spec测试项已完成测试，测试报告已归档</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>可靠性测试完成，关键测试项（如跌落、按键寿命）通过</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>认证预测试完成，主要不合格项已整改</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>设计文件（原理图、PCB、结构）已正式冻结，BOM V2已锁定</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>DVT期间的需求变更已全部处理，变更影响已评估</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>用户试用反馈已收集，关键问题已制定优化计划</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>PVT阶段产线规划已完成（工装夹具、测试设备、产能目标）</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>BOM成本控制在目标范围内，或已获得管理层批准超支</span></div>
+            </div>
+
+            <h3>8.3 PVT Gate 评审Checklist</h3>
+            <div class="checklist">
+                <div class="checklist-title">📋 PVT Gate — PM自检清单</div>
+                <div class="checklist-item"><input type="checkbox"> <span>产线良率连续5天≥95%（或达到公司设定的通过标准）</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>关键性能参数Cpk≥1.33，满足质量一致性要求</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>所有BOM料件已完成PPAP（生产件批准程序）</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>正式认证报告已取得（或认证机构已出具预合格结论）</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>包装方案已通过运输测试验证</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>量产爬坡计划已制定，各里程碑目标明确</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>MP阶段质量标准（抽样标准、AQL）已与工厂对齐</span></div>
+                <div class="checklist-item"><input type="checkbox"> <span>GTM计划（上市时间、定价、渠道）已获管理层批准</span></div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>📌 本期小结</h3>
+            <p>第2期我们完整梳理了硬件产品开发的<strong>NPI五阶段流程</strong>：</p>
+            <ol>
+                <li><strong>Concept（概念阶段）</strong>：确定方向和愿景，做正确的事——这是整个流程中战略价值最高的阶段</li>
+                <li><strong>EVT（工程验证）</strong>：验证技术可行性，核心是"能否做出来"</li>
+                <li><strong>DVT（设计验证）</strong>：全面验证设计，锁定产品规格，核心是"做的是否正确"</li>
+                <li><strong>PVT（小批量验证）</strong>：在量产环境下验证，核心是"能否稳定量产"</li>
+                <li><strong>MP（量产阶段）</strong>：规模化交付和运营，核心是"卖得好不好"</li>
+            </ol>
+            <p>下一期，我们将深入<strong>第三章：市场需求分析与产品定位</strong>，详解如何精准识别用户痛点、构建差异化定位，敬请期待。</p>
+        </div>
+    </section>
+
+</main>
+
+<!-- 页脚 -->
+<footer class="footer">
+    <p>🔧 硬件产品经理知识体系 · 第2期 / 共10期</p>
+    <p>由 WorkBuddy AI 自动生成 · 内容仅供参考学习</p>
+    <p style="margin-top:8px;">© 2026 | 下一期预告：市场需求分析与产品定位</p>
+</footer>
+
+<!-- 返回顶部 -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// 阅读进度条
+window.addEventListener('scroll', function() {
+    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrolled = (winScroll / height) * 100;
+    document.getElementById('progressBar').style.width = scrolled + '%';
+
+    // 返回顶部按钮
+    const btn = document.getElementById('backTop');
+    if (winScroll > 400) {
+        btn.classList.add('visible');
+    } else {
+        btn.classList.remove('visible');
+    }
+});
+
+// 平滑滚动
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            const offset = 70;
+            const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+        }
+    });
+});
+</script>
+
+</body>
+</html>
