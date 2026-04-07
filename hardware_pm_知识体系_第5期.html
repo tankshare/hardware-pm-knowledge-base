@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>硬件产品经理知识体系 · 第5期 — 硬件架构设计与选型</title>
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-light: #e8eefb;
+            --accent: #f59e0b;
+            --text: #1f2937;
+            --text-secondary: #6b7280;
+            --bg: #f9fafb;
+            --card-bg: #ffffff;
+            --border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        /* 顶部导航 */
+        .top-nav {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1a56db 100%);
+            color: white;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+        }
+        .nav-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-brand {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .nav-brand span { opacity: 0.7; font-weight: 400; margin-left: 8px; font-size: 13px; }
+        .nav-period {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* Hero 区域 */
+        .hero {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1a56db 50%, #7c3aed 100%);
+            color: white;
+            padding: 60px 24px 50px;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .hero-subtitle {
+            font-size: 16px;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        .hero-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .hero-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 主内容区 */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* 文章头部 */
+        .article-header {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+        .article-summary {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            font-size: 15px;
+            color: var(--text);
+            line-height: 1.8;
+        }
+
+        /* 目录 */
+        .toc {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+        .toc-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toc-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        .toc-list li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .toc-list li a:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .toc-list li a::before {
+            content: "#";
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* 章节标题 */
+        h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 48px 0 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h2 .section-num {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-size: 19px;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--text);
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 24px 0 12px;
+            color: var(--text);
+        }
+
+        /* 段落和文本 */
+        p {
+            margin-bottom: 16px;
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        /* 重点框 */
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        .highlight-box.info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left-color: var(--info);
+        }
+        .highlight-box.success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left-color: var(--success);
+        }
+        .highlight-box.danger {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left-color: var(--danger);
+        }
+        .highlight-box-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            font-size: 14px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        th {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: #f9fafb; }
+
+        /* 代码块 */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px 24px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            margin: 20px 0;
+        }
+        .code-block .comment { color: #64748b; }
+        .code-block .keyword { color: #c084fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fcd34d; }
+
+        /* 列表 */
+        ul, ol {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+        li {
+            margin-bottom: 10px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* 卡片 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* 标签 */
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .tag-primary { background: #dbeafe; color: #1d4ed8; }
+        .tag-success { background: #d1fae5; color: #047857; }
+        .tag-warning { background: #fef3c7; color: #b45309; }
+        .tag-danger { background: #fee2e2; color: #b91c1c; }
+
+        /* 步骤 */
+        .steps {
+            margin: 24px 0;
+        }
+        .step {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border);
+        }
+        .step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .step-num {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .step-content { flex: 1; }
+        .step-title { font-weight: 600; margin-bottom: 6px; }
+        .step-desc { font-size: 14px; color: var(--text-secondary); }
+
+        /* 底部导航 */
+        .nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border);
+        }
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .nav-btn.primary {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            border-color: transparent;
+        }
+        .nav-btn.primary:hover { opacity: 0.9; }
+
+        /* 页脚 */
+        .footer {
+            background: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 40px 24px;
+            margin-top: 60px;
+        }
+        .footer p { margin-bottom: 8px; font-size: 14px; }
+        .footer a { color: #60a5fa; text-decoration: none; }
+
+        /* 阅读进度条 */
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), #7c3aed);
+            z-index: 101;
+            transition: width 0.1s;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 24px; }
+            .hero-meta { gap: 16px; }
+            h2 { font-size: 20px; }
+            .card-grid { grid-template-columns: 1fr; }
+            .toc-list { grid-template-columns: 1fr; }
+        }
+
+        /* 模板框 */
+        .template-box {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+        .template-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .template-title {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* 架构图模拟 */
+        .arch-diagram {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 24px 0;
+            text-align: center;
+        }
+        .arch-layer {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .arch-box {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            min-width: 100px;
+        }
+        .arch-box.cloud { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .arch-box.app { background: linear-gradient(135deg, #10b981, #059669); }
+        .arch-box.wireless { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .arch-box.sensor { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .arch-box.power { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .arch-connector {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 20px;
+            margin: 4px 0;
+        }
+        .arch-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav class="top-nav">
+    <div class="nav-inner">
+        <div class="nav-brand">🔧 硬件产品经理知识体系 <span>系统化学习指南</span></div>
+        <div class="nav-period">第5期 / 共10期</div>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="hero-badge">⚙️ 架构设计篇</div>
+    <h1>硬件架构设计与选型</h1>
+    <p class="hero-subtitle">从系统级视角理解硬件架构设计，掌握主控平台选型、子系统划分与接口设计的核心方法论</p>
+    <div class="hero-meta">
+        <div class="hero-meta-item">
+            <span>📅</span>
+            <span>发布日期：2026年4月7日</span>
+        </div>
+        <div class="hero-meta-item">
+            <span>⏱️</span>
+            <span>阅读时间：约14分钟</span>
+        </div>
+        <div class="hero-meta-item">
+            <span>📝</span>
+            <span>字数：约3100字</span>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="article-header">
+        <div class="article-summary">
+            <strong>本期核心：</strong>硬件架构设计是硬件PM最具技术含量的工作之一——它决定了产品的性能边界、成本结构和竞争壁垒。一个好的架构设计能让后续开发事半功倍，而糟糕的架构决策会在量产阶段付出高昂代价。本期将带你从系统工程师的视角，理解如何做硬件架构设计、怎样做平台选型、以及如何与硬件工程师进行有效协作。无论你是希望提升技术段位的硬件PM，还是想与硬件团队更好地沟通，本期内容都将提供实用框架。
+        </div>
+    </div>
+
+    <nav class="toc">
+        <div class="toc-title">📑 本期目录</div>
+        <ul class="toc-list">
+            <li><a href="#section1">硬件架构设计的本质与价值</a></li>
+            <li><a href="#section2">系统架构设计流程</a></li>
+            <li><a href="#section3">主控平台选型方法论</a></li>
+            <li><a href="#section4">关键子系统设计要点</a></li>
+            <li><a href="#section5">接口与总线设计规范</a></li>
+            <li><a href="#section6">电源架构设计</a></li>
+            <li><a href="#section7">架构评审与验证</a></li>
+            <li><a href="#section8">实战案例：智能手表架构设计</a></li>
+        </ul>
+    </nav>
+
+    <h2 id="section1"><span class="section-num">1</span>硬件架构设计的本质与价值</h2>
+
+    <p>很多硬件PM在日常工作中会收到类似这样的需求："我们想做一款智能摄像头，需要支持人形检测、双向语音、7×24小时录像"。PM的任务是将这些产品需求转化为技术规格，而硬件架构设计就是这一转化的核心工作。</p>
+
+    <h3>1.1 什么是硬件架构设计</h3>
+
+    <p>硬件架构设计（Hardware Architecture Design）是在产品需求基础上，确定产品的整体硬件方案、各子系统的划分、技术选型和接口定义。它回答的核心问题是：<strong>"用什么样的硬件组合，以什么方式连接，来实现产品需求"</strong>。</p>
+
+    <div class="highlight-box info">
+        <div class="highlight-box-title">💡 与硬件工程设计的区别</div>
+        <p>硬件架构设计 ≠ 硬件工程设计。前者回答"用什么方案"，后者回答"具体怎么实现"。PM主要负责前者，硬件工程师负责后者。但PM必须理解架构设计的逻辑，才能在需求谈判中做出合理判断，避免提出"技术上做不到"或"成本上不合算"的需求。</p>
+    </div>
+
+    <h3>1.2 架构决策的影响力</h3>
+
+    <p>架构阶段的决策影响周期最长、更改成本最高。以下几个数据值得关注：</p>
+
+    <table>
+        <tr>
+            <th>决策维度</th>
+            <th>架构阶段决策</th>
+            <th>后期变更成本</th>
+            <th>典型后果</th>
+        </tr>
+        <tr>
+            <td>主控平台选型</td>
+            <td>±2周评估</td>
+            <td>重新打板、固件移植（6-12周）</td>
+            <td>项目延期3-6个月</td>
+        </tr>
+        <tr>
+            <td>通信方案</td>
+            <td>±1周评估</td>
+            <td>硬件重设、认证重做</td>
+            <td>错过上市窗口</td>
+        </tr>
+        <tr>
+            <td>电源架构</td>
+            <td>±3天评估</td>
+            <td>改板、热设计重做</td>
+            <td>续航不达标、产品召回</td>
+        </tr>
+        <tr>
+            <td>传感器选型</td>
+            <td>±1周评估</td>
+            <td>结构改动、算法重训</td>
+            <td>产品体验下降</td>
+        </tr>
+    </table>
+
+    <div class="highlight-box danger">
+        <div class="highlight-box-title">⚠️ 关键警示</div>
+        <p>硬件架构设计窗口通常只有4-8周（EVT前期），一旦原理图设计完成，很多架构决策将无法更改。作为硬件PM，你必须在架构设计阶段深度参与，帮助团队在有限时间内做出最优决策。这个窗口期的投入产出比是整项目中最高的。</p>
+    </div>
+
+    <h3>1.3 硬件PM在架构设计中的角色</h3>
+
+    <p>硬件PM不是架构师，但在架构设计中承担着不可替代的桥梁作用：</p>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-title">🎯 需求锚定</div>
+            <div class="card-content">将产品需求转化为技术约束条件，为架构师提供明确的输入边界</div>
+        </div>
+        <div class="card">
+            <div class="card-title">⚖️ 权衡协调</div>
+            <div class="card-content">在性能、成本、功耗、体积等多个维度进行权衡，寻找最优平衡点</div>
+        </div>
+        <div class="card">
+            <div class="card-title">📊 决策推动</div>
+            <div class="card-content">在技术团队出现分歧时，基于产品视角推动决策，并承担决策后果</div>
+        </div>
+        <div class="card">
+            <div class="card-title">🔗 跨域对齐</div>
+            <div class="card-content">协调硬件、软件、结构、供应链多域，确保架构方案各方认可</div>
+        </div>
+    </div>
+
+    <h2 id="section2"><span class="section-num">2</span>系统架构设计流程</h2>
+
+    <p>系统架构设计是一个迭代的过程，通常遵循以下六个步骤。</p>
+
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+                <div class="step-title">需求输入与分解</div>
+                <div class="step-desc">从PRD中提取所有与硬件相关的需求，按功能、性能、成本、认证等维度分类整理</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+                <div class="step-title">子系统划分</div>
+                <div class="step-desc">根据功能域，将系统划分为若干子系统（如：AP子系统、无线子系统、传感子系统、电源子系统）</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+                <div class="step-title">技术方案探索</div>
+                <div class="step-desc">针对每个子系统，列出2-3种可行的技术方案及其优劣势</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+                <div class="step-title">方案权衡与决策</div>
+                <div class="step-desc">基于产品需求，对各方案进行性能/成本/功耗/风险的综合评估，选定最优方案</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">5</div>
+            <div class="step-content">
+                <div class="step-title">接口定义与集成</div>
+                <div class="step-desc">明确子系统间的接口定义、通信协议、数据格式，确保系统集成可行性</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">6</div>
+            <div class="step-content">
+                <div class="step-title">架构评审与验证</div>
+                <div class="step-desc">组织跨团队架构评审，记录决策依据，确保方案经过充分验证</div>
+            </div>
+        </div>
+    </div>
+
+    <h3>2.1 系统架构图的基本构成</h3>
+
+    <p>系统架构图是架构设计最重要的输出物之一。一个典型的硬件系统架构图通常包含以下层次：</p>
+
+    <div class="arch-diagram">
+        <div class="arch-label">☁️ 云端服务层</div>
+        <div class="arch-layer">
+            <div class="arch-box cloud">云平台</div>
+            <div class="arch-box cloud">AI服务</div>
+            <div class="arch-box cloud">数据存储</div>
+        </div>
+        <div class="arch-connector">↓ 无线通信 ↓</div>
+        <div class="arch-label">📱 应用层</div>
+        <div class="arch-layer">
+            <div class="arch-box app">手机App</div>
+            <div class="arch-box app">配网控制</div>
+            <div class="arch-box app">数据展示</div>
+        </div>
+        <div class="arch-connector">↓ BLE/WiFi ↓</div>
+        <div class="arch-label">⚙️ 主系统层</div>
+        <div class="arch-layer">
+            <div class="arch-box">主控MCU</div>
+            <div class="arch-box wireless">通信模组</div>
+            <div class="arch-box">存储</div>
+            <div class="arch-box">显示</div>
+        </div>
+        <div class="arch-connector">↓ I2C/SPI/UART ↓</div>
+        <div class="arch-label">🔧 传感与外设层</div>
+        <div class="arch-layer">
+            <div class="arch-box sensor">心率传感</div>
+            <div class="arch-box sensor">加速度</div>
+            <div class="arch-box sensor">GPS</div>
+            <div class="arch-box sensor">麦克风</div>
+        </div>
+        <div class="arch-connector">↓</div>
+        <div class="arch-label">🔋 电源管理层</div>
+        <div class="arch-layer">
+            <div class="arch-box power">电池</div>
+            <div class="arch-box power">PMU</div>
+            <div class="arch-box power">充电管理</div>
+        </div>
+    </div>
+
+    <div class="highlight-box info">
+        <div class="highlight-box-title">💡 PM编写架构图建议</div>
+        <p>PM不需要绘制专业的电路原理图，但必须能够绘制系统级架构图。推荐使用draw.io、Excalidraw等工具，重点展示：子系统划分、主芯片型号、主要接口关系、数据流向。这张图是团队沟通的"通用语言"，应尽早产出并持续迭代。</p>
+    </div>
+
+    <h2 id="section3"><span class="section-num">3</span>主控平台选型方法论</h2>
+
+    <p>主控平台（Main SoC/MCU）是硬件系统的心脏，它的选型直接决定了产品的性能上限、成本结构和开发周期。主控选型是硬件PM最需要深度参与的决策之一。</p>
+
+    <h3>3.1 主控选型的四大维度</h3>
+
+    <table>
+        <tr>
+            <th>维度</th>
+            <th>核心评估要素</th>
+            <th>常见陷阱</th>
+        </tr>
+        <tr>
+            <td><strong>计算性能</strong></td>
+            <td>主频、Core数量、AI加速器、DSP</td>
+            <td>唯主频论，忽略实际工作负载</td>
+        </tr>
+        <tr>
+            <td><strong>功耗表现</strong></td>
+            <td>active电流、sleep电流、功耗管理模式</td>
+            <td>只看datasheet平均功耗，忽略峰值</td>
+        </tr>
+        <tr>
+            <td><strong>成本结构</strong></td>
+            <td>芯片单价、最小订购量、NRE成本、开发板</td>
+            <td>忽视认证成本和生态支持费</td>
+        </tr>
+        <tr>
+            <td><strong>生态成熟度</strong></td>
+            <td>参考设计、SDK完整性、社区支持、替代型号</td>
+            <td>选用"唯一供应商"方案</td>
+        </tr>
+    </table>
+
+    <h3>3.2 主流主控平台对比</h3>
+
+    <p>不同产品类型对主控的需求差异巨大，以下是几类典型产品的平台对比：</p>
+
+    <table>
+        <tr>
+            <th>产品类型</th>
+            <th>推荐平台</th>
+            <th>主频</th>
+            <th>典型功耗</th>
+            <th>BOM成本</th>
+            <th>适用场景</th>
+        </tr>
+        <tr>
+            <td>可穿戴设备</td>
+            <td>Nordic nRF53/Realtek RTL8762</td>
+            <td>64-128MHz</td>
+            <td>~10mA(ACTIVE)</td>
+            <td>$3-6</td>
+            <td>手表/手环/耳机</td>
+        </tr>
+        <tr>
+            <td>智能家居</td>
+            <td>ESP32-S3/MT7682</td>
+            <td>240MHz</td>
+            <td>~80mA(WiFi TX)</td>
+            <td>$2-4</td>
+            <td>插座/灯泡/传感器</td>
+        </tr>
+        <tr>
+            <td>IPC摄像头</td>
+            <td>君正X1500/瑞芯微RK3506</td>
+            <td>1-1.5GHz</td>
+            <td>~500mA</td>
+            <td>$8-15</td>
+            <td>人形检测/NVR</td>
+        </tr>
+        <tr>
+            <td>智能音箱</td>
+            <td>MT8163/全志R328</td>
+            <td>1.3-1.5GHz</td>
+            <td>~300mA</td>
+            <td>$5-10</td>
+            <td>语音交互/IoT中枢</td>
+        </tr>
+        <tr>
+            <td>白电/工控</td>
+            <td>STM32H7/兆易GD32F4</td>
+            <td>480MHz</td>
+            <td>~50mA</td>
+            <td>$3-8</td>
+            <td>变频控制/显示面板</td>
+        </tr>
+    </table>
+
+    <div class="highlight-box">
+        <div class="highlight-box-title">🎯 主控选型Checklist</div>
+        <ol>
+            <li>计算性能是否满足AI推理需求（端侧推理还是云端推理？）</li>
+            <li>内建无线功能（WiFi/BT/Zigbee）还是需要外挂通信模组？</li>
+            <li>是否有成熟参考设计和完整SDK，减少开发周期？</li>
+            <li>是否有至少一个备选型号（避免单一供应商风险）？</li>
+            <li>该芯片的市场供货稳定性如何（是否已量产3年以上）？</li>
+            <li>BOM成本是否在产品毛利模型的允许范围内？</li>
+        </ol>
+    </div>
+
+    <h3>3.3 选型决策的典型权衡场景</h3>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-title">💡 高性能 vs 低功耗</div>
+            <div class="card-content">
+                <p>例如：IPC摄像头选用RK3506（高性能）还是ESP32-S3（低功耗）？</p>
+                <p><strong>判断标准：</strong>是否需要本地AI推理？如果需要人形检测本地化，必须选高性能；如果只是定时唤醒上传图片，低功耗方案可省50% BOM成本。</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">💡 单芯片 vs 多芯片</div>
+            <div class="card-content">
+                <p>例如：智能手表选集成BT+MCU的SoC还是分立方案？</p>
+                <p><strong>判断标准：</strong>板级空间是否充裕？集成方案节省空间和BOM，但分立方案便于局部升级换代（换BT版本不换主控）。</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">💡 新平台 vs 成熟平台</div>
+            <div class="card-content">
+                <p>例如：选最新发布的芯片还是上市2年以上的成熟芯片？</p>
+                <p><strong>判断标准：</strong>产品生命周期多长？短期产品可用新平台抢性能优势；长生命周期产品（5年以上）必须选成熟平台，规避停厂风险。</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">💡 成本优先 vs 生态优先</div>
+            <div class="card-content">
+                <p>例如：选国产芯片（成本低）还是国际大厂芯片（生态好）？</p>
+                <p><strong>判断标准：</strong>是否需要出海合规（GDPR/FCC）？如果面向全球市场，国际大厂芯片的认证支持更完善；如果主做国内，国产芯片的性价比优势明显。</p>
+            </div>
+        </div>
+    </div>
+
+    <h2 id="section4"><span class="section-num">4</span>关键子系统设计要点</h2>
+
+    <p>在主控平台确定后，PM需要与硬件工程师共同确定各子系统的设计方案。以下是几类最常见子系统的设计要点。</p>
+
+    <h3>4.1 无线通信子系统</h3>
+
+    <p>无线通信是物联网产品的核心能力，选型时需要综合考虑通信距离、带宽、功耗和成本。</p>
+
+    <table>
+        <tr>
+            <th>通信技术</th>
+            <th>通信距离</th>
+            <th>典型速率</th>
+            <th>平均功耗</th>
+            <th>BOM成本</th>
+            <th>代表产品</th>
+        </tr>
+        <tr>
+            <td>BLE 5.0</td>
+            <td>100m（空旷）</td>
+            <td>2Mbps</td>
+            <td>~5mA</td>
+            <td>$0.5-2</td>
+            <td>手环/手表/Beacon</td>
+        </tr>
+        <tr>
+            <td>WiFi 802.11n</td>
+            <td>50m（室内）</td>
+            <td>72Mbps</td>
+            <td>~60mA</td>
+            <td>$1.5-3</td>
+            <td>摄像头/智能音箱</td>
+        </tr>
+        <tr>
+            <td>Zigbee 3.0</td>
+            <td>100m（室外）</td>
+            <td>250Kbps</td>
+            <td>~20mA</td>
+            <td>$0.8-2</td>
+            <td>智能家居/开关</td>
+        </tr>
+        <tr>
+            <td>NB-IoT</td>
+            <td>覆盖能力强</td>
+            <td>250Kbps</td>
+            <td>~120mA（峰值）</td>
+            <td>$3-5</td>
+            <td>水表/燃气/追踪器</td>
+        </tr>
+        <tr>
+            <td>LoRa</td>
+            <td>3-10km</td>
+            <td>50Kbps</td>
+            <td>~40mA</td>
+            <td>$2-5</td>
+            <td>农业/工业传感器</td>
+        </tr>
+    </table>
+
+    <div class="highlight-box info">
+        <div class="highlight-box-title">📋 PM需要明确的无线需求</div>
+        <ul>
+            <li><strong>通信对象：</strong>与手机通信（BLE）？与云端通信（WiFi/NB）？与网关通信（Zigbee）？</li>
+            <li><strong>数据量：</strong>实时音视频（需要高带宽）？状态上报（低带宽即可）？</li>
+            <li><strong>使用场景：</strong>室内（BLE/WiFi足够）？室外长距离（NB-IoT/LoRa）？</li>
+            <li><strong>功耗约束：</strong>电池供电（BLE为主）？外接电源（WiFi可用）？</li>
+        </ul>
+    </div>
+
+    <h3>4.2 传感子系统</h3>
+
+    <p>传感器是产品感知世界的"五官"，选型时需同时考虑硬件性能和算法支撑。</p>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-title">🌡️ 环境传感</div>
+            <div class="card-content">
+                温湿度传感器（精度/响应时间）、气压传感器、光照传感器、气体传感器（VOC/CO2）
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">🏃 运动传感</div>
+            <div class="card-content">
+                加速度计（量程/采样率）、陀螺仪、磁力计、GPS模组，用于运动检测、计步、定位
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">💓 生物传感</div>
+            <div class="card-content">
+                PPG心率（LED数量/采样率）、血氧饱和度（SpO2）、ECG心电图、血压（PPG+力学融合）
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">🎤 声音传感</div>
+            <div class="card-content">
+                MEMS麦克风（灵敏度/SNR）、麦克风阵列（远场语音交互）、骨传导传感器
+            </div>
+        </div>
+    </div>
+
+    <h3>4.3 存储子系统</h3>
+
+    <p>存储选型容易被忽视，但对产品体验影响巨大。需要关注三个维度：</p>
+
+    <ul>
+        <li><strong>容量规划：</strong>本地存储多少数据？是否支持循环覆盖？例：1080P录像每天8小时需要约80GB，7天循环即需要≥560GB存储</li>
+        <li><strong>速度匹配：</strong>存储读写速度必须≥数据产生速度。4K录像需要UHS-I以上存储卡或eMMC</li>
+        <li><strong>可靠性：</strong>反复擦写场景（行车记录仪）必须选用高耐久度存储，TLC/QLC闪存需谨慎评估写入寿命</li>
+    </ul>
+
+    <h2 id="section5"><span class="section-num">5</span>接口与总线设计规范</span></h2>
+
+    <p>子系统之间的接口定义是系统集成的关键。PM需要了解主流接口总线的特点，以便在需求沟通中提出合理要求。</p>
+
+    <table>
+        <tr>
+            <th>接口类型</th>
+            <th>速率</th>
+            <th>从设备数量</th>
+            <th>连线复杂度</th>
+            <th>典型应用</th>
+        </tr>
+        <tr>
+            <td>I2C</td>
+            <td>100K-1MHz</td>
+            <td>≤128个设备</td>
+            <td>简单（2线）</td>
+            <td>传感器、PMU、RTC</td>
+        </tr>
+        <tr>
+            <td>SPI</td>
+            <td>1-100MHz</td>
+            <td>≤10个设备</td>
+            <td>中等（4线/从设备）</td>
+            <td>屏幕、存储、射频前端</td>
+        </tr>
+        <tr>
+            <td>UART</td>
+            <td>≤10Mbps</td>
+            <td>点对点</td>
+            <td>简单（2线+流控）</td>
+            <td>蓝牙模块、GPS模块调试</td>
+        </tr>
+        <tr>
+            <td>USB 2.0</td>
+            <td>480Mbps</td>
+            <td>点对点（OTG）</td>
+            <td>需要ESD保护</td>
+            <td>充电/数据通信/烧录</td>
+        </tr>
+        <tr>
+            <td>SDIO</td>
+            <td>208MHz</td>
+            <td>点对点</td>
+            <td>复杂</td>
+            <td>WiFi模组、SD卡</td>
+        </tr>
+    </table>
+
+    <div class="highlight-box">
+        <div class="highlight-box-title">💡 PM在接口设计中的注意事项</div>
+        <ol>
+            <li><strong>预留在用接口：</strong>设计阶段预留充足的I2C/SPI接口，不要刚好用完，因为后续可能新增传感器</li>
+            <li><strong>明确I2C地址冲突：</strong>如果系统中有多个相同类型传感器，需要提前规划I2C地址分配方案</li>
+            <li><strong>调试接口预留：</strong>预留UART调试口（用于固件烧录和日志输出），即使量产时不用也要留</li>
+            <li><strong>未来扩展性：</strong>预留2-3个GPIO用于未来功能扩展（如增加一颗传感器）</li>
+        </ol>
+    </div>
+
+    <h2 id="section6"><span class="section-num">6</span>电源架构设计</h2>
+
+    <p>电源设计是硬件系统中最容易被低估、但影响最深远的部分。续航是消费电子的核心体验指标，一旦设计定型，后期极难优化。</p>
+
+    <h3>6.1 电源架构设计流程</h3>
+
+    <p>电源架构设计的核心是回答三个问题：供多少电、怎么供电、如何省电。</p>
+
+    <div class="template-box">
+        <div class="template-header">
+            <span>📝</span>
+            <span class="template-title">电源架构需求模板</span>
+        </div>
+        <div class="code-block">
+<span class="comment">【系统供电需求】</span>
+<span class="keyword">电源输入：</span>DC 5V/1A（USB-C PD） / 内置锂电池（3.7V/2000mAh）
+<span class="keyword">各域电压：</span>
+  - 主控域：3.3V（LDO，最大电流500mA）
+  - 通信域：3.3V（BLE模块，最大电流50mA）
+  - 传感域：3.3V（传感器，常开电流≤10mA）
+  - RF域：VBAT直供（PA最大电流1.5A，峰值）
+<span class="keyword">功耗预算：</span>
+  - 深度休眠：≤50μA（仅RTC运行）
+  - 待机模式：≤500μA（BLE连接，心率检测）
+  - 正常工作：≤30mA（屏幕点亮）
+  - 峰值功耗：≤2A（RF发射瞬间）
+<span class="keyword">续航目标：</span>
+  - 典型使用：≥14天（每天亮屏2小时）
+  - 纯待机：≥30天</span>
+</div>
+    </div>
+
+    <h3>6.2 功耗预算制定方法</h3>
+
+    <p>功耗预算是电源架构设计的起点。推荐采用"自下而上"的方法制定：</p>
+
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+                <div class="step-title">列出所有功耗来源</div>
+                <div class="step-desc">列出系统所有耗电组件及其datasheet给出的典型功耗值</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+                <div class="step-title">定义工作模式及占比</div>
+                <div class="step-desc">根据用户使用习惯，定义各工作模式的时长占比（可通过用户调研或竞品数据估算）</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+                <div class="step-title">计算加权平均功耗</div>
+                <div class="step-desc">平均功耗 = Σ(各模式功耗 × 该模式占比)，与电池容量反推目标续航对比</div>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+                <div class="step-title">识别瓶颈与优化方向</div>
+                <div class="step-desc">找出功耗占比最高的工作模式，作为重点优化目标</div>
+            </div>
+        </div>
+    </div>
+
+    <h3>6.3 电源树设计原则</h3>
+
+    <p>电源树（Power Tree）描述了从电池/电源输入到各负载的供电路径。良好的电源树设计遵循以下原则：</p>
+
+    <ul>
+        <li><strong>先分后合：</strong>各域独立供电比共享供电更灵活，便于单独控制各域功耗</li>
+        <li><strong>DCDC优先：</strong>效率优先选用DC-DC（效率90%+），LDO仅用于小电流或噪声敏感电路</li>
+        <li><strong>关断控制：</strong>每个非必要域都应能被主控单独关断，避免漏电流</li>
+        <li><strong>上电时序：</strong>明确各域上电顺序，特别是主控与外设的启动先后关系</li>
+    </ul>
+
+    <h2 id="section7"><span class="section-num">7</span>架构评审与验证</h2>
+
+    <h3>7.1 架构评审 checklist</h3>
+
+    <p>架构评审是硬件PM主导的最重要会议之一。以下是评审时需要确认的核心问题：</p>
+
+    <table>
+        <tr>
+            <th>评审维度</th>
+            <th>核心问题</th>
+            <th>决策状态</th>
+        </tr>
+        <tr>
+            <td>性能</td>
+            <td>主频/算力是否满足AI推理需求？是否有Benchmark数据支撑？</td>
+            <td>✅/❌/⚠️</td>
+        </tr>
+        <tr>
+            <td>功耗</td>
+            <td>功耗预算是否经过详细计算？各域功耗分配是否合理？</td>
+            <td>✅/❌/⚠️</td>
+        </tr>
+        <tr>
+            <td>成本</td>
+            <td>BOM成本是否在目标范围内？是否有降本空间？</td>
+            <td>✅/❌/⚠️</td>
+        </tr>
+        <tr>
+            <td>供应链</td>
+            <td>所有关键器件是否有2家以上供应商？交期是否可控？</td>
+            <td>✅/❌/⚠️</td>
+        </tr>
+        <tr>
+            <td>认证</td>
+            <td>该方案是否能通过目标市场的认证要求（FCC/CE/3C）？</td>
+            <td>✅/❌/⚠️</td>
+        </tr>
+        <tr>
+            <td>开发周期</td>
+            <td>参考设计完整性如何？SDK成熟度能否支撑项目时间线？</td>
+            <td>✅/❌/⚠️</td>
+        </tr>
+        <tr>
+            <td>扩展性</td>
+            <td>该架构是否能支持未来1-2代产品的迭代需求？</td>
+            <td>✅/❌/⚠️</td>
+        </tr>
+    </table>
+
+    <h3>7.2 架构方案的验证方法</h3>
+
+    <p>在正式进入详细设计前，应通过以下方式验证架构方案的可行性：</p>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-title">🔬 原理验证（PoP）</div>
+            <div class="card-content">
+                使用官方EVK/开发板搭建原型系统，验证关键功能模块能否正常工作，功耗实测值与理论值是否吻合。
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">📊 竞品拆解对标</div>
+            <div class="card-content">
+                拆解3-5款竞品，分析其架构方案和BOM成本，验证己方方案的性能和成本是否具有竞争力。
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">👥 专家评审</div>
+            <div class="card-content">
+                邀请供应商FAE、架构专家或有过类似项目经验的工程师，对方案进行第三方评审，识别潜在风险。
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">📝 文档固化</div>
+            <div class="card-content">
+                架构设计评审通过后，将架构图、接口定义表、功耗预算表等关键文档纳入配置管理，作为后续开发的基础。
+            </div>
+        </div>
+    </div>
+
+    <h2 id="section8"><span class="section-num">8</span>实战案例：智能手表架构设计</h2>
+
+    <h3>8.1 案例背景</h3>
+
+    <p>目标：设计一款支持心率监测、GPS运动追踪、蓝牙通话的智能手表，要求续航≥7天，售价$99，目标市场国内。</p>
+
+    <h3>8.2 架构设计过程</h3>
+
+    <div class="template-box">
+        <div class="template-header">
+            <span>📝</span>
+            <span class="template-title">智能手表架构设计方案</span>
+        </div>
+        <div class="code-block">
+<span class="comment">【主控平台选型决策】</span>
+方案A：Nordic nRF5340（BLE+CAT-M双模）
+  ✅ 优势：集成度高，超低功耗，生态成熟
+  ❌ 劣势：无AP处理器，性能有限，不支持彩色屏
+  结论：❌ 不满足彩色显示需求
+
+方案B：Realtek RTL8763E（BT+BR+EDR + Cortex-M4）
+  ✅ 优势：集成BT，功耗低，支持丰富外设接口
+  ❌ 劣势：需外挂Flash，GUI加速能力一般
+  结论：⚠️ 基本满足，但图形性能存疑
+
+方案C：Ambiq Apollo4（BLE + M4F + 2.5D GPU）
+  ✅ 优势：超低功耗（低30%），内置2.5D图形加速
+  ✅ 支持AMOLED显示屏，AOD（息屏显示）
+  ❌ 劣势：价格较RTL8763E高约$1.5
+  结论：✅ 选定为最终方案（溢价$1.5换来显著体验提升）</span>
+</div>
+    </div>
+
+    <h3>8.3 最终架构方案</h3>
+
+    <div class="arch-diagram">
+        <div class="arch-label">📱 手机端</div>
+        <div class="arch-layer">
+            <div class="arch-box app">健康App</div>
+            <div class="arch-box app">通知推送</div>
+        </div>
+        <div class="arch-connector">↓ BLE 5.0 ↓</div>
+        <div class="arch-label">⌚ 手表主控（Apollo4）</div>
+        <div class="arch-layer">
+            <div class="arch-box" style="font-size:11px;">Cortex-M4F<br>192MHz</div>
+            <div class="arch-box" style="font-size:11px;">BLE 5.0<br>RF</div>
+            <div class="arch-box" style="font-size:11px;">2.5D GPU<br>支持AOD</div>
+            <div class="arch-box" style="font-size:11px;">AMOLED<br>Driver</div>
+        </div>
+        <div class="arch-connector">↓ SPI ↓</div>
+        <div class="arch-layer">
+            <div class="arch-box sensor" style="font-size:11px;">MAXM86146<br>PPG心率+SpO2</div>
+            <div class="arch-box sensor" style="font-size:11px;">BMI270<br>3轴加速度+陀螺</div>
+            <div class="arch-box sensor" style="font-size:11px;">MT3333<br>GPS+北斗</div>
+            <div class="arch-box sensor" style="font-size:11px;">Knowles<br>MEMS麦克风</div>
+        </div>
+        <div class="arch-connector">↓</div>
+        <div class="arch-label">🔋 电源（BQ25125 + AXP2101）</div>
+        <div class="arch-layer">
+            <div class="arch-box power" style="font-size:11px;">308mAh<br>锂聚合物</div>
+            <div class="arch-box power" style="font-size:11px;">AXP2101<br>DCDC+LDO</div>
+            <div class="arch-box power" style="font-size:11px;">无线充电<br>TX</div>
+        </div>
+    </div>
+
+    <h3>8.4 功耗预算分析</h3>
+
+    <table>
+        <tr>
+            <th>工作模式</th>
+            <th>持续时间</th>
+            <th>主控功耗</th>
+            <th>传感+通信</th>
+            <th>屏幕</th>
+            <th>总电流</th>
+        </tr>
+        <tr>
+            <td>深度休眠（8h/天）</td>
+            <td>8h</td>
+            <td>10μA</td>
+            <td>5μA</td>
+            <td>0μA</td>
+            <td>15μA</td>
+        </tr>
+        <tr>
+            <td>待机+间歇心率（14h/天）</td>
+            <td>14h</td>
+            <td>100μA</td>
+            <td>200μA</td>
+            <td>5μA（AOD）</td>
+            <td>305μA</td>
+        </tr>
+        <tr>
+            <td>亮屏使用（2h/天）</td>
+            <td>2h</td>
+            <td>8mA</td>
+            <td>3mA</td>
+            <td>15mA</td>
+            <td>26mA</td>
+        </tr>
+        <tr>
+            <td colspan="5"><strong>加权平均功耗</strong></td>
+            <td><strong>~90μA（等效续航≈14天）</strong></td>
+        </tr>
+    </table>
+
+    <div class="highlight-box success">
+        <div class="highlight-box-title">✅ 架构设计 Checklist（可保存）</div>
+        <ol>
+            <li><strong>需求完整性：</strong>所有产品需求已转化为技术约束条件了吗？</li>
+            <li><strong>平台合理性：</strong>主控性能/功耗/成本是否在合理区间？是否有备选方案？</li>
+            <li><strong>子系统可行性：</strong>各子系统接口是否明确定义？I2C地址是否无冲突？</li>
+            <li><strong>电源合规性：</strong>功耗预算是否经过详细计算？各域关断策略是否可行？</li>
+            <li><strong>供应链安全：</strong>关键器件是否有至少2家供应商？交期是否满足项目计划？</li>
+            <li><strong>认证可行性：</strong>该方案是否能满足目标市场的强制认证要求？</li>
+            <li><strong>架构评审通过：</strong>是否已组织跨团队架构评审并记录决策依据？</li>
+        </ol>
+    </div>
+
+    <nav class="nav-footer">
+        <a href="hardware_pm_知识体系_第4期.html" class="nav-btn">← 上一期：硬件产品需求文档（PRD）编写规范</a>
+        <a href="index.html" class="nav-btn primary">返回首页 →</a>
+    </nav>
+
+</div>
+
+<footer class="footer">
+    <p>🔧 硬件产品经理知识体系 · 第5期</p>
+    <p style="margin-top:6px;">© 2026 tankshare | 持续更新中</p>
+    <p style="margin-top:12px; opacity:0.7;">下一期预告：<a href="hardware_pm_知识体系_第6期.html">电子元器件选型与供应链管理</a></p>
+</footer>
+
+<script>
+    // 阅读进度条
+    window.addEventListener('scroll', function() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById('progressBar').style.width = scrolled + '%';
+    });
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
